@@ -74,15 +74,18 @@ func (g *ValueGenerator) GenRawVal(col model.Column) (any, error) {
 	case model.Boolean:
 		return gofakeit.Bool(), nil
 
-	// TODO: make sure to format properly for respectice targets
 	case model.Date:
-		return gofakeit.Date(), nil
+		// Return a random date in YYYY-MM-DD format
+		return gofakeit.Date().Format("2006-01-02"), nil
 	case model.Time:
-		return gofakeit.Date(), nil
+		// Return a random time in HH:MM:SS format
+		return gofakeit.Date().Format("15:04:05"), nil
 	case model.Timestamp:
-		return gofakeit.Date(), nil
+		// Return a random timestamp in RFC3339 format
+		return gofakeit.Date().Format(time.RFC3339), nil
 	case model.TimestampTZ:
-		return gofakeit.Date(), nil
+		// Return a random timestamp with timezone in RFC3339 format
+		return gofakeit.Date().Format(time.RFC3339), nil
 
 	default:
 		return nil, ErrColumnTypeNotSupported
@@ -115,15 +118,22 @@ func (g *ValueGenerator) GenUniqueVal(col model.Column, iter uint32) (any, error
 	case model.Boolean:
 		return iter%2 == 0, nil
 
-	// TODO: make sure to format properly for respectice targets
 	case model.Date:
-		return time.UnixMilli(int64(iter)), nil
+		// Generate a unique date by adding iter days to a base date
+		base := time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC)
+		return base.AddDate(0, 0, int(iter)).Format("2006-01-02"), nil
 	case model.Time:
-		return time.UnixMilli(int64(iter)), nil
+		// Generate a unique time by adding iter seconds to midnight
+		base := time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC)
+		return base.Add(time.Duration(iter) * time.Second).Format("15:04:05"), nil
 	case model.Timestamp:
-		return time.UnixMilli(int64(iter)), nil
+		// Generate a unique timestamp by adding iter seconds to a base
+		base := time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC)
+		return base.Add(time.Duration(iter) * time.Second).Format(time.RFC3339), nil
 	case model.TimestampTZ:
-		return time.UnixMilli(int64(iter)), nil
+		// Generate a unique timestamp with timezone by adding iter seconds
+		base := time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC)
+		return base.Add(time.Duration(iter) * time.Second).Format(time.RFC3339), nil
 
 	default:
 		return nil, ErrColumnTypeNotSupported

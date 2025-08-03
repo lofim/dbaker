@@ -146,12 +146,48 @@ type InfoSchemaColumn struct {
 	IsIdentity             *string
 }
 
+func mapUdtNameToColumnType(udtName string) model.ColumnType {
+	switch udtName {
+	case "int2":
+		return model.SmallInt
+	case "int4":
+		return model.Int
+	case "int8":
+		return model.BigInt
+	case "float4":
+		return model.Real
+	case "float8":
+		return model.Double
+	case "varchar":
+		return model.Varchar
+	case "bpchar":
+		return model.Char
+	case "text":
+		return model.Text
+	case "uuid":
+		return model.UUID
+	case "bool":
+		return model.Boolean
+	case "date":
+		return model.Date
+	case "time":
+		return model.Time
+	case "timestamp":
+		return model.Timestamp
+	case "timestamptz":
+		return model.TimestampTZ
+	default:
+		return model.ColumnType(udtName) // fallback for unsupported types
+	}
+}
+
 func (c InfoSchemaColumn) mapToColumn() model.Column {
 	var column model.Column
 	column.Name = *c.ColumnName
 
-	// TODO: this might require a proper mapping from UDT to model column type
-	column.Typ = model.ColumnType(*c.UdtName)
+	if c.UdtName != nil {
+		column.Typ = mapUdtNameToColumnType(*c.UdtName)
+	}
 
 	if c.CharacterMaximumLength != nil {
 		column.MaxLength = *c.CharacterMaximumLength

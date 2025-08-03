@@ -16,7 +16,7 @@ services:
     ports:
       - 5432:5432
 
-  dminer:
+  adminer:
     image: adminer:latest
     ports:
       - 5433:8080
